@@ -8,8 +8,7 @@ def keyboard(request):
 
     return JsonResponse(
         {
-            'type':'buttons',
-            'buttons':['test1','test2']
+            'type':'text'
         }
     )
 
