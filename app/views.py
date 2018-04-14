@@ -7,6 +7,6 @@ def keyboard(request):
     return JsonResponse(
         {
             'type':'buttons',
-            'buttons':['key_one','key_two','key_three']
+            'buttons':['key one','key two','key three']
         }
     )
