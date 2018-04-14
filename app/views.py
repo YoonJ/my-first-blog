@@ -8,7 +8,7 @@ def keyboard(request):
 
     return JsonResponse(
         {
-            'type':'text'
+            "type":"text"
         }
     )
 
@@ -25,22 +25,22 @@ def message(request):
     if content_name == '일정':
         return JsonResponse(
         {
-            'message':{
-                'text': '일정을 말했습니다.'
+            "message":{
+                "text": "일정을 말했습니다."
             },
-            'keyboard':{
-                'type':'text'
+            "keyboard":{
+                "type":"text"
             }
         }
     )
     elif content_name == '공유':
         return JsonResponse(
         {
-            'message':{
-                'text': '공유을 말했습니다.'
+            "message":{
+                "text": "공유를 말했습니다."
             },
-            'keyboard':{
-                'type':'text'
+            "keyboard":{
+                "type":"text"
             }
         }
     )
