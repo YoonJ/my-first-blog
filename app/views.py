@@ -13,9 +13,12 @@ def keyboard(request):
         }
     )
 
-#@csrf_exempt
+@csrf_exempt
 def message(request):
 
+    if(request == None):
+        print("request없어서 문제")
+        
     #request를 한글호환이 되는 'utf-8'로 바뚜어 json_str변수에 저장
     json_str = ((request.body).decode('uft-8'))
     #JSON문자열로 되어 있는 것을 Python 타입으로 변경시켜 received_json변수에 저장
