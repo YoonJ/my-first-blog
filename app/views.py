@@ -8,7 +8,8 @@ def keyboard(request):
 
     return JsonResponse(
         {
-            "type":"text"
+            'type':'buttons',
+            'buttons':['test1','test2']
         }
     )
 
@@ -22,25 +23,27 @@ def message(request):
     #사용자가 보낸 명령어에서 필드명이 content인 변수에 저장
     content_name = received_json['content']
 
-    if content_name == '일정':
+    request_mode = content_name.encode('utf-8')
+
+    if request_mode == '일정':
         return JsonResponse(
         {
-            "message":{
-                "text": "일정을 말했습니다."
+            'message':{
+                'text': "일정을 말했습니다."
             },
-            "keyboard":{
-                "type":"text"
+            'keyboard':{
+                'type':'text'
             }
         }
     )
-    elif content_name == '공유':
+    elif request_mode == '공유':
         return JsonResponse(
         {
-            "message":{
-                "text": "공유를 말했습니다."
+            'message':{
+                'text': "공유를 말했습니다."
             },
-            "keyboard":{
-                "type":"text"
+            'keyboard':{
+                'type':'text'
             }
         }
     )
