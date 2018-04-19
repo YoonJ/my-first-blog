@@ -37,29 +37,53 @@ class When():
     Weekday = datetime.datetime.today().weekday() # int Monday=0 ~
     Oclock = int(timeinfo.hour)
     Min = int(timeinfo.minute)
-    From = None
-    To = None
-    updated = False
+
+    From_Day = None
+
+    To_Year = None # ~ 까지
+    To_Month = None
+    To_Day = None
+    To_Weekday = None
+    To_Oclock = None
+    To_Min = None
+
+    isNextweek = 0
+    isThisweek = False
+    detected = False
 
 
     def update(self,time,unit):
         if unit == '월':
             self.Month = time
-            self.updated = True
+            self.detected = True
         elif unit == '일':
             self.Day = time
-            self.updated = True
+            self.detected = True
         elif unit == '시':
             self.Oclock = time
-            self.updated = True
+            self.detected = True
         elif unit == '분':
             self.Min = time
-            self.updated = True
+            self.detected = True
 
-    def update_by_weekday(self, weekday, isNextweek):
+
+    def next_week_detected(self):
+        self.isNextweek = 7
+        self.isThisweek = False
+        self.From_Day = self.Day - self.Weekday +7
+        self.To_Day = self.Day + 6 - self.Weekday +7
+
+    def this_week_detected(self):
+        self.isNextweek = 0
+        self.isThisweek = True
+        self.From_Day = self.Day - self.Weekday
+        self.To_Day = self.Day + 6 - self.Weekday
+
+
+    def update_by_weekday(self, weekday):
         weeklist = ['월', '화', '수', '목', '금', '토', '일']
         try:
-            input_Weekday = weeklist.index(weekday) + isNextweek
+            input_Weekday = weeklist.index(weekday) + self.isNextweek
             offset = input_Weekday - self.Weekday
             self.update(self.Day_original + offset, '일')
 
@@ -67,8 +91,11 @@ class When():
             return False
 
     def __str__(self):
-        if self.updated:
-            return "%d년 %2d월 %2d일 %2d시 %2d분"% (self.Year, self.Month ,self.Day, self.Oclock , self.Min)
+        if self.detected:
+            return "%2d월 %2d일 %2d시 %2d분"% (self.Month ,self.Day, self.Oclock , self.Min)
+
+        elif self.isNextweek or self.isThisweek:
+            return "%2d월 %2d일 %2d시 %2d분"% (self.Month ,self.From_Day, self.Oclock , self.Min) + " ~ " + "%2d월 %2d일 %2d시 %2d분"% (self.Month ,self.To_Day, self.Oclock , self.Min)
         else:
             return "입력된 시간 정보가 없음"
 
@@ -156,27 +183,27 @@ def getWhen(sentence):
 
     return timelist
 
-def getWhen2(sentence): # 3일 뒤 1주일 뒤 X / 요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료
+def getWhen2(sentence): # 3일 뒤 1주일 후 / 요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능
 
-    #sentence = sentence.replace(' ','') # 띄어쓰기 없이 다 붙임 -> 필요없는듯
     twit = Twitter().pos(sentence.strip(), norm=True, stem=1) #트윗으로 분석하면 어찌됐건 시간은 잘 나눠짐
-    #kkma = Kkma().pos(sentence, flatten=1)
-    #print(kkma)
-    #print(twit)
     #print(twit)
     timeclass = When()
     for i in range(len(twit)):
         corpus = twit[i]
         word = corpus[0]
         pos = corpus[1]
-        if word[1:] == '요일':
-            weekday = word[0]
-           #print(i, twit[i-1][0], twit[i-2][0])
-            if (i-2 >= 0 and twit[i-2][0] == '다음') or (i-1 >= 0 and twit[i-1][0] == '다음주'):
-                timeclass.update_by_weekday(weekday,7) # 다음주 x 요일 따라서 +7
-            else:
-                timeclass.update_by_weekday(weekday, 0)  # 이번주 x 요일 따라서 + 0
+        if word == '다음주' or (word=='다음' and twit[i+1][0] == '주'): # 다음주
+            timeclass.next_week_detected()
 
+        elif word == '이번주' or (word=='이번' and twit[i+1][0] == '주'): # 이번주
+            timeclass.this_week_detected()
+
+        elif word[1:] == '요일': # 요일 디텍션
+            weekday = word[0]
+            timeclass.update_by_weekday(weekday)
+
+        elif word == '오늘':
+            timeclass.update(timeclass.Day_original, '일')
         elif word == '내일':
             timeclass.update(timeclass.Day_original+1, '일')
         elif word == '모레':
@@ -212,7 +239,7 @@ def understand(sentence):
     #action = Action(twit)
 
 
-    if (when.updated) : # 시간 정보가 있으면 일정관련명령
+    if (when.detected) : # 시간 정보가 있으면 일정관련명령
         pass
 
     else: # 시간 정보가 없으면 보안 관련 명령
