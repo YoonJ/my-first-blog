@@ -99,6 +99,8 @@ class When():
         else:
             return "입력된 시간 정보가 없음"
 
+
+
 def conver_to_int(char):
     numlist = ['zero', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구']
     try:
@@ -223,7 +225,7 @@ def Action2(twit): # 진행중
     return action
 
 def understand(sentence):
-    print("\n", sentence)
+    #print("\n", sentence)
     when = getWhen2(sentence)
 
     twit = Twitter().pos(sentence, norm=True, stem=1)
@@ -240,12 +242,19 @@ def understand(sentence):
     where = [ ]
     what = [ ]
 
-    #kkma = Kkma().pos(sentence, flatten=1)
-    #print(kkma)
-    return when, action
-    #print(when, action)
+    if when.detected:
+        return "%2d월 %2d일 %2d시 %2d분" % (when.Month, when.Day, when.Oclock, when.Min), action
 
-#list1 = ['오월삼일열시오십이분친구와밥약속추가해줘',
+    elif when.isNextweek or when.isThisweek:
+        return "%2d월 %2d일 %2d시 %2d분" % (
+        when.Month, when.From_Day, when.Oclock, when.Min) + " ~ " + "%2d월 %2d일 %2d시 %2d분" % (
+            when.Month, when.To_Day, when.Oclock, when.Min), action
+    else:
+        return "입력된 시간 정보가 없음", action
+
+    #print(when, action)
+'''
+list1 = ['오월삼일열시오십이분친구와밥약속추가해줘',
          '1월 일일 열한시 밥약속 있어? ',
          '이번 화요일 밥약속 추가',
          '이번주 목요일 다섯시 11시 밥약속 추가',
@@ -259,7 +268,7 @@ def understand(sentence):
          '이번주 일요일 밥약속 추가해줘',
          '다음주 월요일 시험 추가']
 
-
+'''
 
 #data = open('data.txt','r',encoding='utf8')
 #query=data.readline().strip()
