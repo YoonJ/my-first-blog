@@ -128,7 +128,6 @@ def conver_to_int(char):
             return time
     '''
 
-
 def extract_time(word):
     try:
         unit = word[-1]
@@ -161,29 +160,8 @@ def extract_time(word):
         return 0,0
 
 
-def getWhen(sentence):
-    sentence = sentence.replace(' ','') # 띄어쓰기 없이 다 붙임
-    twit = Twitter().pos(sentence, norm=True, stem=1) #트윗으로 분석하면 어찌됐건 시간은 잘 나눠짐
-    print(twit)
-    timelist=[ ]
-    for i in range(len(twit)):
-        corpus = twit[i]
-        word = corpus[0]
-        pos = corpus[1]
 
-        if pos == 'Number':
-            time = word
-            unit = twit[i+1][0]
-            timelist.append((time, unit[0])) # '시밥' 이 출력되는 경우도 있어 맨 앞글자만 추가
-
-        else:
-            time , unit = extract_time(word)
-            if time:
-                timelist.append((time, unit[0]))
-
-    return timelist
-
-def getWhen2(sentence): # 3일 뒤 1주일 후 / 요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능
+def getWhen2(sentence): # 3일 뒤 1주일 후 / 요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 / 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일)
 
     twit = Twitter().pos(sentence.strip(), norm=True, stem=1) #트윗으로 분석하면 어찌됐건 시간은 잘 나눠짐
     #print(twit)
@@ -220,7 +198,6 @@ def getWhen2(sentence): # 3일 뒤 1주일 후 / 요일의 경우 '요일'꼭 �
 
     return timeclass
 
-
 def Action(twit): # 진행중
     action = [ ]
     for corpus in twit:
@@ -231,17 +208,30 @@ def Action(twit): # 진행중
 
     return('정보수정')
 
+def Action2(twit): # 진행중
+    action = [ ]
+    for corpus in twit:
+        word = corpus[0]
+        if word in {'추가', '등록', '있다' }:
+            action.append( ('일정등록', word) )
+        if word in {'변경', '수정', '바꾸다'}:
+            action.append( ('일정변경', word))
+        if word in {'삭제', '지우다'}:
+            action.append(('일정삭제', word))
+        if word in  {'?', '확인', '알다', '가능하다'}:
+            action.append ( ('정보확인', word) )
+    return action
+
 def understand(sentence):
     print("\n", sentence)
     when = getWhen2(sentence)
 
     twit = Twitter().pos(sentence, norm=True, stem=1)
-    #action = Action(twit)
+    action = Action2(twit)
 
 
     if (when.detected) : # 시간 정보가 있으면 일정관련명령
         pass
-
     else: # 시간 정보가 없으면 보안 관련 명령
         pass
 
@@ -252,10 +242,10 @@ def understand(sentence):
 
     #kkma = Kkma().pos(sentence, flatten=1)
     #print(kkma)
+    return when, action
+    #print(when, action)
 
-    print(when)
-
-list1 = ['오월삼일열시오십이분친구와밥약속추가해줘',
+#list1 = ['오월삼일열시오십이분친구와밥약속추가해줘',
          '1월 일일 열한시 밥약속 있어? ',
          '이번 화요일 밥약속 추가',
          '이번주 목요일 다섯시 11시 밥약속 추가',
@@ -270,14 +260,37 @@ list1 = ['오월삼일열시오십이분친구와밥약속추가해줘',
          '다음주 월요일 시험 추가']
 
 
-data = open('data.txt','r',encoding='utf8')
-query=data.readline().strip()
-while (query):
-    understand(query)
-    query = data.readline().strip()
+
+#data = open('data.txt','r',encoding='utf8')
+#query=data.readline().strip()
+#while (query):
+#    understand(query)
+#    query = data.readline().strip()
 
 
-e=time.time()
-print(e-s , '초')
+#e=time.time()
+#print(e-s , '초')
 
 
+
+def getWhen(sentence):
+    sentence = sentence.replace(' ','') # 띄어쓰기 없이 다 붙임
+    twit = Twitter().pos(sentence, norm=True, stem=1) #트윗으로 분석하면 어찌됐건 시간은 잘 나눠짐
+    print(twit)
+    timelist=[ ]
+    for i in range(len(twit)):
+        corpus = twit[i]
+        word = corpus[0]
+        pos = corpus[1]
+
+        if pos == 'Number':
+            time = word
+            unit = twit[i+1][0]
+            timelist.append((time, unit[0])) # '시밥' 이 출력되는 경우도 있어 맨 앞글자만 추가
+
+        else:
+            time , unit = extract_time(word)
+            if time:
+                timelist.append((time, unit[0]))
+
+    return timelist
