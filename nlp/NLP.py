@@ -230,9 +230,9 @@ def understand(sentence):
     sentence = sentence.strip()
     twitter = Twitter().pos(sentence, norm=True, stem=True)
     cheklist = [False for i in range(len(twitter))]
-    when = getWhen(twitter)
-    action = Action(twitter)
-    whom = getWhom(twitter)
+    when = getWhen(twitter,cheklist)
+    action = Action(twitter,cheklist)
+    whom = getWhom(twitter,cheklist)
     where = getWhere(twitter,cheklist)
     what = [ ]
     #isSchedule= 1 # 스케줄 일정인가 보안 정보인가
