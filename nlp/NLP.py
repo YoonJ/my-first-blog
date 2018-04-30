@@ -137,8 +137,6 @@ def extract_time(word):
         print(e)
         return 0,0
 
-
-
 def getWhen(twit):
     # 3일 뒤 1주일 후 구현 안됨 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일) 구현 안됨
     #  요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 /
@@ -198,13 +196,17 @@ def Action(twit): # 진행중
         action_list.append('일정등록')
     return action_list
 
-def getWhere(twit):
+def getWhere(twit, checklist):
+
     result = [ ]
     for t in range(len(twit)):
-        word, pos =  twit[t]
-        if  pos == 'Josa' and ( word =='에서' or word =='서'):
-            result.append(twit[t-1][0])
-
+        if not checklist[t]:
+            word, pos =  twit[t]
+            if  pos == 'Josa' and ( word =='에서' or word =='서'):
+                result.append(twit[t-1][0])
+                checklist[t] = True
+                checklist[t-1] = True
+    print(checklist)
     return result
 
 
@@ -227,10 +229,11 @@ def understand(sentence):
     #print("\n", sentence)
     sentence = sentence.strip()
     twitter = Twitter().pos(sentence, norm=True, stem=True)
+    cheklist = [False for i in range(len(twitter))]
     when = getWhen(twitter)
     action = Action(twitter)
     whom = getWhom(twitter)
-    where = getWhere(twitter)
+    where = getWhere(twitter,cheklist)
     what = [ ]
     #isSchedule= 1 # 스케줄 일정인가 보안 정보인가
 
