@@ -175,22 +175,35 @@ def getWhen(twit,checklist):
     return timeclass
 
 
-def Action(twit): # 진행중
+def Action(twit, checklist): # 진행중
     action_list = []
     add = False
-    for corpus in twit:
-        word = corpus[0]
+    for i in range(len(twit)):
+        corpus = twit[i]
+        word, pos = twit[i]
         if word in {'추가', '등록', '있다'}:
             action_list.append(('일정등록', word))
+            checklist[i] = 2
+            if pos == 'Noun' and i + 1 < len(twit):
+                checklist[i + 1] = 2
             add = True
         elif word in {'변경', '수정', '바꾸다'}:
             action_list.append( ('일정변경', word))
+            checklist[i] = 2
+            if pos == 'Noun' and i + 1 < len(twit):
+                checklist[i + 1] = 2
             add = True
-        elif word in {'삭제', '지우다', '없애다', '없다', '취소하다'}:
+        elif word in {'삭제', '지우다', '없애다', '없다', '취소'}:
             action_list.append(('일정삭제', word))
+            checklist[i] = 2
+            if pos == 'Noun' and i+1 < len(twit):
+                checklist[i+1] = 2
             add = True
         elif word in {'?', '확인', '알다', '가능하다', '되다', '돼다'}:
             action_list.append(('정보확인', word))
+            checklist[i] = 2
+            if pos == 'Noun' and i + 1 < len(twit):
+                checklist[i + 1] = 2
             add = True
     if add is False:
         action_list.append('일정등록')
@@ -213,7 +226,7 @@ def getWhere(twit, checklist):
 def getFriends(ID): # depends on database....
     return {'진호', '영희', '철수'}
 
-def getWhom(twit):
+def getWhom(twit, checklist):
     friends = getFriends(1234)
     result = []
     for i in range(len(twit)):
