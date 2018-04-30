@@ -6,28 +6,6 @@ import time
 import datetime
 s = time.time()
 
-if  0:
-
-    for tag in [ Twitter, Kkma] : #Komoran
-        nlp = tag()
-        for sentence in list1:
-
-           # nlp = Twitter()  # Twitter 라이브러리 사용
-            if tag == Twitter:
-                result = nlp.pos(sentence, norm=True, stem=1)
-            else:
-                result = nlp.pos(sentence, flatten=1)
-
-            for phrase in result:
-                if 'J' in phrase[-1]:
-                    print(phrase[0], '(', phrase[1],')' , end = ' \t')
-                else:
-                    print(phrase[0] ,'(', phrase[1],')',  end  = ' ')
-
-            print()
-        print( '\n')
-
-
 class When():
     timeinfo= datetime.datetime.now()
     Year = int(timeinfo.year)
@@ -162,11 +140,9 @@ def extract_time(word):
 
 
 def getWhen(twit):
-    # 3일 뒤 1주일 후 구현 안됨  / 요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 / 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일)
+    # 3일 뒤 1주일 후 구현 안됨 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일) 구현 안됨
+    #  요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 /
 
-
-
-    #print(twit)
     timeclass = When()
     for i in range(len(twit)):
         corpus = twit[i]
@@ -202,18 +178,25 @@ def getWhen(twit):
 
 
 def Action(twit): # 진행중
-    action = [ ]
+    action_list = []
+    add = False
     for corpus in twit:
         word = corpus[0]
-        if word in {'추가', '등록', '있다' }:
-            action.append( ('일정등록', word) )
+        if word in {'추가', '등록', '있다'}:
+            action_list.append(('일정등록', word))
+            add = True
         elif word in {'변경', '수정', '바꾸다'}:
-            action.append( ('일정변경', word))
-        elif word in {'삭제', '지우다'}:
-            action.append(('일정삭제', word))
-        elif word in  {'?', '확인', '알다', '가능하다'}:
-            action.append ( ('정보확인', word) )
-    return action
+            action_list.append( ('일정변경', word))
+            add = True
+        elif word in {'삭제', '지우다', '없애다', '없다', '취소하다'}:
+            action_list.append(('일정삭제', word))
+            add = True
+        elif word in {'?', '확인', '알다', '가능하다', '되다', '돼다'}:
+            action_list.append(('정보확인', word))
+            add = True
+    if add is False:
+        action_list.append('일정등록')
+    return action_list
 
 def getWhere(twit):
     result = [ ]
@@ -237,18 +220,13 @@ def getWhom(twit):
             result.append(word)
         elif pos == 'Josa' and (word =='랑' or word =='이랑' or word =='와' or word =='이와'):
             result.append(twit[i-1][0])
-    return result
+    return list(set(result))
 
-class TwitterClass: # sublcass로 when... 등 만들어서 infodetected가 0 인 곳만 고려해서 뽑기. 나머지는 기타로 빼서 출력
-    def __init__(self, twit):
-        self.twit = twit
-        self.is_info_detected = [0 for t in twit] # [0,0,0,0,0] 으로 초기화, 각 twit의 인덱스가 시간,엑션 등등으로 판명되었으면 1
 
 def understand(sentence):
     #print("\n", sentence)
     sentence = sentence.strip()
     twitter = Twitter().pos(sentence, norm=True, stem=True)
-    #twitter = TwitterClass(twitter)
     when = getWhen(twitter)
     action = Action(twitter)
     whom = getWhom(twitter)
@@ -259,7 +237,32 @@ def understand(sentence):
     return when, where, whom, what, action
 
 
+''' 
+class TwitterClass: # sublcass로 when... 등 만들어서 infodetected가 0 인 곳만 고려해서 뽑기. 나머지는 기타로 빼서 출력
+    def __init__(self, twit):
+        self.twit = twit
+        self.is_info_detected = [0 for t in twit] # [0,0,0,0,0] 으로 초기화, 각 twit의 인덱스가 시간,엑션 등등으로 판명되었으면 1
 
+if  0:
+
+    for tag in [ Twitter, Kkma] : #Komoran
+        nlp = tag()
+        for sentence in list1:
+
+           # nlp = Twitter()  # Twitter 라이브러리 사용
+            if tag == Twitter:
+                result = nlp.pos(sentence, norm=True, stem=1)
+            else:
+                result = nlp.pos(sentence, flatten=1)
+
+            for phrase in result:
+                if 'J' in phrase[-1]:
+                    print(phrase[0], '(', phrase[1],')' , end = ' \t')
+                else:
+                    print(phrase[0] ,'(', phrase[1],')',  end  = ' ')
+
+            print()
+        print( '\n')
 
 def getWhen_oldver(sentence):
     sentence = sentence.replace(' ','') # 띄어쓰기 없이 다 붙임
@@ -291,3 +294,4 @@ def Action_oldver(twit): # 진행중
             return action
 
     return('정보수정')
+'''

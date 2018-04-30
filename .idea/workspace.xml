@@ -10,18 +10,31 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/my_first_blog$NLP_Check.coverage" NAME="NLP_Check Coverage Results" MODIFIED="1525053150263" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/nlp" />
-    <SUITE FILE_PATH="coverage/my_first_blog$NLP.coverage" NAME="NLP Coverage Results" MODIFIED="1525052964953" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/nlp" />
+    <SUITE FILE_PATH="coverage/my_first_blog$NLP_Check.coverage" NAME="NLP_Check Coverage Results" MODIFIED="1525054704750" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/nlp" />
+    <SUITE FILE_PATH="coverage/my_first_blog$NLP.coverage" NAME="NLP Coverage Results" MODIFIED="1525054384064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/nlp" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
       <file leaf-file-name="NLP.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/nlp/NLP.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="376">
-              <caret line="216" column="0" lean-forward="true" selection-start-line="216" selection-start-column="0" selection-end-line="216" selection-end-column="0" />
+            <state relative-caret-position="299">
+              <caret line="212" column="0" lean-forward="true" selection-start-line="212" selection-start-column="0" selection-end-line="212" selection-end-column="0" />
               <folding>
                 <element signature="e#0#30#0" expanded="true" />
+                <element signature="e#164#2204#0" expanded="false" />
+                <element signature="e#2235#2950#0" expanded="false" />
+                <element signature="e#2980#3763#0" expanded="false" />
+                <element signature="e#3790#4972#0" expanded="false" />
+                <element signature="e#5003#5642#0" expanded="false" />
+                <element signature="e#5668#5859#0" expanded="false" />
+                <element signature="e#5912#5937#0" expanded="false" />
+                <element signature="e#5962#6283#0" expanded="false" />
+                <element signature="e#6316#6642#0" expanded="false" />
+                <element signature="e#6645#8352#1" expanded="false" />
+                <marker date="1525054827754" expanded="false" signature="6909:7497" ph="..." />
+                <marker date="1525054827754" expanded="false" signature="7528:8113" ph="..." />
+                <marker date="1525054827754" expanded="false" signature="8138:8348" ph="..." />
               </folding>
             </state>
           </provider>
@@ -30,8 +43,8 @@
       <file leaf-file-name="NLP_Check.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/nlp/NLP_Check.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="66">
-              <caret line="3" column="13" lean-forward="true" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
+            <state relative-caret-position="242">
+              <caret line="20" column="3" lean-forward="true" selection-start-line="20" selection-start-column="3" selection-end-line="20" selection-end-column="3" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -40,6 +53,13 @@
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>뒤</find>
+      <find>영희</find>
+      <find>action</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -206,7 +226,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2112383" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29032257" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20729166" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -315,8 +335,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/nlp/NLP_Check.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="66">
-          <caret line="3" column="13" lean-forward="true" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
+        <state relative-caret-position="242">
+          <caret line="20" column="3" lean-forward="true" selection-start-line="20" selection-start-column="3" selection-end-line="20" selection-end-column="3" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
@@ -325,10 +345,23 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/nlp/NLP.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="376">
-          <caret line="216" column="0" lean-forward="true" selection-start-line="216" selection-start-column="0" selection-end-line="216" selection-end-column="0" />
+        <state relative-caret-position="299">
+          <caret line="212" column="0" lean-forward="true" selection-start-line="212" selection-start-column="0" selection-end-line="212" selection-end-column="0" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
+            <element signature="e#164#2204#0" expanded="false" />
+            <element signature="e#2235#2950#0" expanded="false" />
+            <element signature="e#2980#3763#0" expanded="false" />
+            <element signature="e#3790#4972#0" expanded="false" />
+            <element signature="e#5003#5642#0" expanded="false" />
+            <element signature="e#5668#5859#0" expanded="false" />
+            <element signature="e#5912#5937#0" expanded="false" />
+            <element signature="e#5962#6283#0" expanded="false" />
+            <element signature="e#6316#6642#0" expanded="false" />
+            <element signature="e#6645#8352#1" expanded="false" />
+            <marker date="1525054827754" expanded="false" signature="6909:7497" ph="..." />
+            <marker date="1525054827754" expanded="false" signature="7528:8113" ph="..." />
+            <marker date="1525054827754" expanded="false" signature="8138:8348" ph="..." />
           </folding>
         </state>
       </provider>
