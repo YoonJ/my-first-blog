@@ -92,19 +92,6 @@ def conver_to_int(char):
             return False
 
 
-    ''' 
-        
-    for i in numlist:
-        if i == char:
-            time = numlist.index(i)
-            return time
-
-    numlist = ['zero', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두']
-    for i in numlist:
-        if i == char:
-            time = numlist.index(i)
-            return time
-    '''
 
 def extract_time(word):
     try:
@@ -138,39 +125,62 @@ def extract_time(word):
         return 0,0
 
 def getWhen(twit,checklist):
-    # 3일 뒤 1주일 후 구현 안됨 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일) 구현 안됨
-    #  요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 /
+    # 3일 뒤 1주일 후 구현 안됨
+    # 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일) 구현 안됨
+    # 오전 오후 구현 안됨
 
+    #  요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 /
     timeclass = When()
     for i in range(len(twit)):
-        corpus = twit[i]
-        word = corpus[0]
-        pos = corpus[1]
-        if word == '다음주' or (word=='다음' and twit[i+1][0] == '주'): # 다음주
-            timeclass.next_week_detected()
+        if not checklist[i]:
+            corpus = twit[i]
+            word = corpus[0]
+            pos = corpus[1]
+            if word == '다음주' :# 다음주
+                timeclass.next_week_detected()
+                checklist[i] = 1
 
-        elif word == '이번주' or (word=='이번' and twit[i+1][0] == '주'): # 이번주
-            timeclass.this_week_detected()
+            elif word=='다음' and twit[i+1][0] == '주': # 다음주
+                timeclass.next_week_detected()
+                checklist[i] = 1
+                checklist[i+1] = 1
 
-        elif word[1:] == '요일': # 요일 디텍션
-            weekday = word[0]
-            timeclass.update_by_weekday(weekday)
+            elif word == '이번주': # 이번주
+                timeclass.this_week_detected()
+                checklist[i] = 1
 
-        elif word == '오늘':
-            timeclass.update(timeclass.Day_original, '일')
-        elif word == '내일':
-            timeclass.update(timeclass.Day_original+1, '일')
-        elif word == '모레':
-            timeclass.update(timeclass.Day_original + 2, '일')
-        elif pos == 'Number':
-            time = word
-            unit = twit[i+1][0]
-            timeclass.update(int(time), unit[0]) # '시밥' 이 출력되는 경우도 있어 맨 앞글자만 추가
+            elif word=='이번' and twit[i+1][0] == '주': # 이번주
+                timeclass.this_week_detected()
+                checklist[i] = 1
+                checklist[i + 1] = 1
 
-        else:
-            time , unit = extract_time(word)
-            if time:
-                timeclass.update(int(time), unit[0])
+            elif word[1:] == '요일': # 요일 디텍션
+                weekday = word[0]
+                timeclass.update_by_weekday(weekday)
+                checklist[i] = 1
+
+            elif word == '오늘':
+                timeclass.update(timeclass.Day_original, '일')
+                checklist[i] = 1
+            elif word == '내일':
+                timeclass.update(timeclass.Day_original+1, '일')
+                checklist[i] = 1
+            elif word == '모레':
+                timeclass.update(timeclass.Day_original + 2, '일')
+                checklist[i] = 1
+            elif pos == 'Number':
+                time = word
+                unit = twit[i+1][0]
+                timeclass.update(int(time), unit[0]) # '시밥' 이 출력되는 경우도 있어 맨 앞글자만 추가
+                checklist[i] = 1
+                checklist[i + 1] = 1
+
+            else:
+                time , unit = extract_time(word)
+                if time:
+                    timeclass.update(int(time), unit[0])
+                    checklist[i] = 1
+
 
     return timeclass
 
@@ -217,8 +227,8 @@ def getWhere(twit, checklist):
             word, pos =  twit[t]
             if  pos == 'Josa' and ( word =='에서' or word =='서'):
                 result.append(twit[t-1][0])
-                checklist[t] = True
-                checklist[t-1] = True
+                checklist[t] = 4
+                checklist[t-1] = 4
     print(checklist)
     return result
 
@@ -226,15 +236,18 @@ def getWhere(twit, checklist):
 def getFriends(ID): # depends on database....
     return {'진호', '영희', '철수'}
 
-def getWhom(twit, checklist):
+def getWhom(twit,checklist):
     friends = getFriends(1234)
     result = []
     for i in range(len(twit)):
         word, pos = twit[i] #
         if word in friends:
             result.append(word)
+            checklist[i] = 3
         elif pos == 'Josa' and (word =='랑' or word =='이랑' or word =='와' or word =='이와'):
             result.append(twit[i-1][0])
+            checklist[i-1] = 3
+            checklist[i] = 3
     return list(set(result))
 
 
@@ -242,6 +255,7 @@ def understand(sentence):
     #print("\n", sentence)
     sentence = sentence.strip()
     twitter = Twitter().pos(sentence, norm=True, stem=True)
+    print(twitter)
     cheklist = [False for i in range(len(twitter))]
     when = getWhen(twitter,cheklist)
     action = Action(twitter,cheklist)
