@@ -128,6 +128,7 @@ def getWhen(twit,checklist):
     # 3일 뒤 1주일 후 구현 안됨
     # 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일) 구현 안됨
     # 오전 오후 구현 안됨
+    # 아침, 점심, 저녁 구현 안됨
 
     #  요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 /
     timeclass = When()
@@ -186,6 +187,10 @@ def getWhen(twit,checklist):
 
 
 def Action(twit, checklist): # 진행중
+    # 보안관련 액션 추가
+    # 등록시 일정이 등록됨
+    # 일정 추가 -> 추가
+
     action_list = []
     add = False
     for i in range(len(twit)):
@@ -236,6 +241,17 @@ def getWhere(twit, checklist):
 def getFriends(ID): # depends on database....
     return {'진호', '영희', '철수'}
 
+
+def getWhat(twit, checklist):
+    what_list = []
+    for i in range(len(twit)):
+        if not checklist[i]:
+            word, pos = twit[i]
+            if pos == 'Noun':
+                what_list.append(twit[i][0])
+    return what_list
+
+
 def getWhom(twit,checklist):
     friends = getFriends(1234)
     result = []
@@ -261,7 +277,7 @@ def understand(sentence):
     action = Action(twitter,cheklist)
     whom = getWhom(twitter,cheklist)
     where = getWhere(twitter,cheklist)
-    what = [ ]
+    what = getWhat(twitter, cheklist)
     #isSchedule= 1 # 스케줄 일정인가 보안 정보인가
 
     return when, where, whom, what, action
