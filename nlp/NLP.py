@@ -97,9 +97,7 @@ class When():
         elif self.isNextweek or self.isThisweek:
             return "%2d월 %2d일 %2d시 %2d분"% (self.Month ,self.From_Day, self.Oclock , self.Min) + " ~ " + "%2d월 %2d일 %2d시 %2d분"% (self.Month ,self.To_Day, self.Oclock , self.Min)
         else:
-            return "입력된 시간 정보가 없음"
-
-
+            return "보안 관련 정보로 추정됨"
 
 def conver_to_int(char):
     numlist = ['zero', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구']
@@ -163,9 +161,8 @@ def extract_time(word):
 
 
 
-def getWhen2(sentence): # 3일 뒤 1주일 후 / 요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 / 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일)
+def getWhen(twit): # 3일 뒤 1주일 후 / 요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 / 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일)
 
-    twit = Twitter().pos(sentence.strip(), norm=True, stem=1) #트윗으로 분석하면 어찌됐건 시간은 잘 나눠짐
     #print(twit)
     timeclass = When()
     for i in range(len(twit)):
@@ -200,89 +197,68 @@ def getWhen2(sentence): # 3일 뒤 1주일 후 / 요일의 경우 '요일'꼭 �
 
     return timeclass
 
+
 def Action(twit): # 진행중
-    action = [ ]
-    for corpus in twit:
-        word = corpus[0]
-        if word in  {'?', '확인', '알다', '가능하다'}:
-            action.append ( ('정보확인', word) )
-            return action
-
-    return('정보수정')
-
-def Action2(twit): # 진행중
     action = [ ]
     for corpus in twit:
         word = corpus[0]
         if word in {'추가', '등록', '있다' }:
             action.append( ('일정등록', word) )
-        if word in {'변경', '수정', '바꾸다'}:
+        elif word in {'변경', '수정', '바꾸다'}:
             action.append( ('일정변경', word))
-        if word in {'삭제', '지우다'}:
+        elif word in {'삭제', '지우다'}:
             action.append(('일정삭제', word))
-        if word in  {'?', '확인', '알다', '가능하다'}:
+        elif word in  {'?', '확인', '알다', '가능하다'}:
             action.append ( ('정보확인', word) )
     return action
 
+def getWhere(twit):
+    result = [ ]
+    for t in range(len(twit)):
+        word, pos =  twit[t]
+        if  pos == 'Josa' and ( word =='에서' or word =='서'):
+            result.append(twit[t-1][0])
+
+    return result
+
+
+def getFriends(ID): # depends on database....
+    return {'진호', '영희', '철수'}
+
+def getWhom(twit):
+    friends = getFriends(1234)
+    result = []
+    for i in range(len(twit)):
+        word, pos = twit[i] #
+        if word in friends:
+            result.append(word)
+        elif pos == 'Josa' and (word =='랑' or word =='이랑' or word =='와' or word =='이와'):
+            result.append(twit[i-1][0])
+    return result
+
+class TwitterClass: # sublcass로 when... 등 만들어서 infodetected가 0 인 곳만 고려해서 뽑기. 나머지는 기타로 빼서 출력
+    def __init__(self, twit):
+        self.twit = twit
+        self.is_info_detected = [0 for t in twit] # [0,0,0,0,0] 으로 초기화, 각 twit의 인덱스가 시간,엑션 등등으로 판명되었으면 1
+
 def understand(sentence):
     #print("\n", sentence)
-    when = getWhen2(sentence)
-
-    twit = Twitter().pos(sentence, norm=True, stem=1)
-    action = Action2(twit)
-
-
-    if (when.detected) : # 시간 정보가 있으면 일정관련명령
-        pass
-    else: # 시간 정보가 없으면 보안 관련 명령
-        pass
-
-
-    whom = [ ]
-    where = [ ]
+    sentence = sentence.strip()
+    twitter = Twitter().pos(sentence, norm=True, stem=True)
+    #twitter = TwitterClass(twitter)
+    when = getWhen(twitter)
+    action = Action(twitter)
+    whom = getWhom(twitter)
+    where = getWhere(twitter)
     what = [ ]
+    #isSchedule= 1 # 스케줄 일정인가 보안 정보인가
 
-    if when.detected:
-        return "%2d월 %2d일 %2d시 %2d분" % (when.Month, when.Day, when.Oclock, when.Min), action
-
-    elif when.isNextweek or when.isThisweek:
-        return "%2d월 %2d일 %2d시 %2d분" % (
-        when.Month, when.From_Day, when.Oclock, when.Min) + " ~ " + "%2d월 %2d일 %2d시 %2d분" % (
-            when.Month, when.To_Day, when.Oclock, when.Min), action
-    else:
-        return "입력된 시간 정보가 없음", action
-
-    #print(when, action)
-'''
-list1 = ['오월삼일열시오십이분친구와밥약속추가해줘',
-         '1월 일일 열한시 밥약속 있어? ',
-         '이번 화요일 밥약속 추가',
-         '이번주 목요일 다섯시 11시 밥약속 추가',
-         '삼월칠일 목요일 열한시 밥약속 추가 ',
-         '이번주 금요일 정보통신세미나 약속',
-         '다음주 금요일 정보통신세미나 약속',
-         '10월 21일 7시 이십구분 건희와 밥약속 취소해줘',
-         '9월 3일1시23분  오랑캐와 전쟁약속',
-         '진호를 친한친구로 등록',
-         '내일 모레 7시 진호 시간되는지 알려줘',
-         '이번주 일요일 밥약속 추가해줘',
-         '다음주 월요일 시험 추가']
-
-'''
-
-#data = open('data.txt','r',encoding='utf8')
-#query=data.readline().strip()
-#while (query):
-#    understand(query)
-#    query = data.readline().strip()
-
-
-#e=time.time()
-#print(e-s , '초')
+    return when, where, whom, what, action
 
 
 
-def getWhen(sentence):
+
+def getWhen_oldver(sentence):
     sentence = sentence.replace(' ','') # 띄어쓰기 없이 다 붙임
     twit = Twitter().pos(sentence, norm=True, stem=1) #트윗으로 분석하면 어찌됐건 시간은 잘 나눠짐
     print(twit)
@@ -303,3 +279,12 @@ def getWhen(sentence):
                 timelist.append((time, unit[0]))
 
     return timelist
+def Action_oldver(twit): # 진행중
+    action = [ ]
+    for corpus in twit:
+        word = corpus[0]
+        if word in  {'?', '확인', '알다', '가능하다'}:
+            action.append ( ('정보확인', word) )
+            return action
+
+    return('정보수정')
