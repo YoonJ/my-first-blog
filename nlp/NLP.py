@@ -137,7 +137,7 @@ def extract_time(word):
         print(e)
         return 0,0
 
-def getWhen(twit):
+def getWhen(twit,checklist):
     # 3일 뒤 1주일 후 구현 안됨 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일) 구현 안됨
     #  요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 /
 
