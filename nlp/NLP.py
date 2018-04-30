@@ -193,33 +193,72 @@ def Action(twit, checklist): # 진행중
 
     action_list = []
     add = False
+    sentence_type = 0
+    grouping_type = None
+
     for i in range(len(twit)):
-        corpus = twit[i]
         word, pos = twit[i]
-        if word in {'추가', '등록', '있다'}:
-            action_list.append(('일정등록', word))
-            checklist[i] = 2
-            if pos == 'Noun' and i + 1 < len(twit):
-                checklist[i + 1] = 2
-            add = True
-        elif word in {'변경', '수정', '바꾸다'}:
-            action_list.append( ('일정변경', word))
-            checklist[i] = 2
-            if pos == 'Noun' and i + 1 < len(twit):
-                checklist[i + 1] = 2
-            add = True
-        elif word in {'삭제', '지우다', '없애다', '없다', '취소'}:
-            action_list.append(('일정삭제', word))
-            checklist[i] = 2
-            if pos == 'Noun' and i+1 < len(twit):
-                checklist[i+1] = 2
-            add = True
-        elif word in {'?', '확인', '알다', '가능하다', '되다', '돼다'}:
-            action_list.append(('정보확인', word))
-            checklist[i] = 2
-            if pos == 'Noun' and i + 1 < len(twit):
-                checklist[i + 1] = 2
-            add = True
+
+        # 보안관련 문장인 경우
+        if word in {'친구', '친한친구', '그룹'}:
+            sentence_type = 1
+            grouping_type = word
+            break;
+
+        # 정보확인에 관한 문장인 경우
+        elif word in {'?'}:
+            sentence_type = 2
+            break;
+
+        # 일정 관련 문장인 경우
+        else:
+            sentence_type = 3
+
+    for i in range(len(twit)):
+        word, pos = twit[i]
+
+        # 보안관련 문장인 경우
+        if sentence_type == 1:
+            if word in {'추가', '등록', '생성', '만들다'}:
+                action_list.append((grouping_type + '추가', word))
+                add = True
+            if word in {'삭제'}:
+                action_list.append((grouping_type + '추가', word))
+                add = True
+
+        # 정보확인에 관한 문장인 경우
+        elif sentence_type == 2:
+            if word in {'확인', '알다', '가능하다', '되다', '돼다'}:
+                checklist[i] = 2
+                if pos == 'Noun' and i + 1 < len(twit):
+                    checklist[i + 1] = 2
+                add = True
+                action_list.append(('정보확인', word))
+
+        # 일정 관련 문장인 경우
+        else:
+            if word in {'추가', '등록', '있다'}:
+                checklist[i] = 2
+                if pos == 'Noun' and i + 1 < len(twit):
+                    checklist[i + 1] = 2
+                add = True
+                action_list.append(('일정등록', word))
+
+            elif word in {'변경', '수정', '바꾸다'}:
+                checklist[i] = 2
+                if pos == 'Noun' and i + 1 < len(twit):
+                    checklist[i + 1] = 2
+                add = True
+                action_list.append( ('일정변경', word))
+
+            elif word in {'삭제', '지우다', '없애다', '없다', '취소'}:
+                checklist[i] = 2
+                if pos == 'Noun' and i+1 < len(twit):
+                    checklist[i+1] = 2
+                add = True
+                action_list.append(('일정삭제', word))
+
+    # 디폴트로 일정을 등록
     if add is False:
         action_list.append('일정등록')
     return action_list
