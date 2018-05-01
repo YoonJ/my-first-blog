@@ -201,17 +201,20 @@ def Action(twit, checklist): # 진행중
 
         # 보안관련 문장인 경우
         if word in {'친구', '친한친구', '그룹'}:
+            checklist[i] = 'type1'
             sentence_type = 1
             grouping_type = word
             break;
 
         # 정보확인에 관한 문장인 경우
         elif word in {'?'}:
+            checklist[i] = 'type2'
             sentence_type = 2
             break;
 
         # 일정 관련 문장인 경우
         else:
+            # checklist[i] = 'type3'
             sentence_type = 3
 
     for i in range(len(twit)):
@@ -228,7 +231,7 @@ def Action(twit, checklist): # 진행중
 
         # 정보확인에 관한 문장인 경우
         elif sentence_type == 2:
-            if word in {'확인', '알다', '가능하다', '되다', '돼다'}:
+            if word in {'확인', '알다', '가능하다', '되다', '돼다', '있다', '야', '하다'}:
                 checklist[i] = 2
                 if pos == 'Noun' and i + 1 < len(twit):
                     checklist[i + 1] = 2
@@ -263,6 +266,7 @@ def Action(twit, checklist): # 진행중
         action_list.append('일정등록')
     return action_list
 
+
 def getWhere(twit, checklist):
 
     result = [ ]
@@ -288,6 +292,8 @@ def getWhat(twit, checklist):
             word, pos = twit[i]
             if pos == 'Noun':
                 what_list.append(twit[i][0])
+
+    # for i in ran
     return what_list
 
 
