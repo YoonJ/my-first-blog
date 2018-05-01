@@ -13,8 +13,8 @@ class When():
     Day = int(timeinfo.day)
     Day_original = int(timeinfo.day)
     Weekday = datetime.datetime.today().weekday() # int Monday=0 ~
-    Oclock = int(timeinfo.hour)
-    Min = int(timeinfo.minute)
+    Oclock = 0 #int(timeinfo.hour)
+    Min = 0 #int(timeinfo.minute)
 
     From_Day = None
 
@@ -48,7 +48,7 @@ class When():
     def next_week_detected(self):
         self.isNextweek = 7
         self.isThisweek = False
-        self.From_Day = self.Day - self.Weekday +7
+        self.From_Day = self.Day - self.Weekday +7 # +8 ???
         self.To_Day = self.Day + 6 - self.Weekday +7
 
     def this_week_detected(self):
@@ -176,6 +176,15 @@ def getWhen(twit,checklist):
                 checklist[i] = 1
                 checklist[i + 1] = 1
 
+            elif word == '오전' or word =='아침':
+                #timeclass.update(timeclass.Day_original + 2, '일')
+                checklist[i] = 1
+
+            elif word == '오후' or word == '점심' or  word =='저녁':
+                #timeclass.update(timeclass.Day_original + 2, '일')
+                checklist[i] = 1
+
+
             else:
                 time , unit = extract_time(word)
                 if time:
@@ -278,7 +287,7 @@ def getWhere(twit, checklist):
 
 
 def getFriends(ID): # depends on database....
-    return {'진호', '영희', '철수'}
+    return {'진호', '영희', '철수','건희'}
 
 
 def getWhat(twit, checklist):
