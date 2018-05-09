@@ -5,3 +5,6 @@ myvenv
 db.sqlite3
 /static
 .DS_Store
+.idea/
+credential.json
+client_secret.json
