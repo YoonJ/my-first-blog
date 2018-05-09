@@ -141,12 +141,9 @@ def register_event(name, time):
 
 
 
-#msg = get_upcoming_event()
 name = 'chicken dinner'
 datetime = '2018-05-05T18:00:00+09:00'
 register_event(name=name, time=datetime)
-
-#print(msg)
 
 
 
