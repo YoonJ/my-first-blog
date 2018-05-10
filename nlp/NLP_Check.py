@@ -3,16 +3,14 @@ import time
 
 s=time.time()
 
-data = open('data2.txt','r',encoding='utf8')
+data = open('data.txt','r',encoding='utf8')
 query=data.readline().strip()
 entity=('When : ', 'Where : ' ,'Whom : ', 'What : ', 'Action : ' )
 while (query):
-    print(query)
+    #print(query)
     [print(entity[i], result)  for i, result in enumerate (NLP.understand(query)) ]
     print("#---------------------------------#")
     query = data.readline().strip()
-
-
 
 
 
