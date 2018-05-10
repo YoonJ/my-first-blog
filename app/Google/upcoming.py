@@ -15,10 +15,10 @@ import calendar
 def get_upcoming_event():
     # Setup the Calendar API
     SCOPES = 'https://www.googleapis.com/auth/calendar'
-    store = file.Storage('credentials.json')
+    store = file.Storage('../app/Google/credentials.json')
     creds = store.get()
     if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('client_secret.json', SCOPES)
+        flow = client.flow_from_clientsecrets('../app/Google/client_secret.json', SCOPES)
         creds = tools.run_flow(flow, store)
     service = build('calendar', 'v3', http=creds.authorize(Http()))
 
@@ -36,6 +36,8 @@ def get_upcoming_event():
         print('No upcoming events found.')
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
+        print(type(start))
+
         print(start, event['summary'])
      #   print(start)
      #   print(event['summary'])
@@ -46,7 +48,7 @@ def get_upcoming_event():
     time = start[12:16]
     msg = "다가오는 최근 일정은 "
     msg += year + "년 " + month + "월 " + day + "일 " + time + "에 " + event['summary'] + "입니다."
-    #print(msg)
+    print(msg)
 
     return msg
 
@@ -90,60 +92,21 @@ def get_event(time):
     return msg
 
 
-def register_event(name, time):
+def register_event2(event):
     # Setup the Calendar API
     SCOPES = 'https://www.googleapis.com/auth/calendar'
-    store = file.Storage('credentials.json')
+    store = file.Storage('../app/Google/credentials.json')
     creds = store.get()
     if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('client_secret.json', SCOPES)
+        flow = client.flow_from_clientsecrets('../app/Google/client_secret.json', SCOPES)
         creds = tools.run_flow(flow, store)
     service = build('calendar', 'v3', http=creds.authorize(Http()))
 
     # Call the Calendar API
     # 여기에서 받은 parameter에 대해서 event를 알아서 조정해주면 된다.
-
-    event = {
-        'summary': name, # 일정 이름
-        'location': '', # 일정 장소
-        'description': '', # 일정 설명
-        'start': { # 시작 시간
-            'dateTime': time, # '2015-05-28T09:00:00-07:00' 이런 format으로
-            'timeZone': 'Asia/Seoul',
-        },
-        'end': { # 끝나는 시간
-            'dateTime': time,
-            'timeZone': 'Asia/Seoul',
-        },
-        'recurrence': [
-            'RRULE:FREQ=DAILY;COUNT=2'
-        ],
-        'attendees': [ # 만약에 grouping을 사용할 때 구성원들의 이메일을 적어주면 좋을 듯
-            {'email': 'lpage@example.com'},
-            {'email': 'sbrin@example.com'},
-        ],
-        'reminders': { # reminder, 이메일로 일정 전날에 알려줄지 + 팝업으로 몇 분 전에 알려줄지
-            'useDefault': False,
-            'overrides': [
-                {'method': 'email', 'minutes': 24 * 60},
-                {'method': 'popup', 'minutes': 10},
-            ],
-        },
-    }
-
     event = service.events().insert(calendarId='primary', body=event).execute()
     print ('Event created: %s' % (event.get('htmlLink')))
 
 
+    print(111)
     return
-
-
-
-
-
-name = 'chicken dinner'
-datetime = '2018-05-05T18:00:00+09:00'
-register_event(name=name, time=datetime)
-
-
-
