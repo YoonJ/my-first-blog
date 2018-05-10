@@ -15,6 +15,7 @@ class When():
     Weekday = datetime.datetime.today().weekday() # int Monday=0 ~
     Oclock = 0 #int(timeinfo.hour)
     Min = 0 #int(timeinfo.minute)
+    PM= True
 
     From_Day = None
 
@@ -38,7 +39,10 @@ class When():
             self.Day = time
             self.detected = True
         elif unit == '시':
-            self.Oclock = time
+            if time < 12:
+                self.Oclock += time +12
+            else:
+                self.Oclock += time
             self.detected = True
         elif unit == '분':
             self.Min = time
@@ -75,7 +79,7 @@ class When():
         elif self.isNextweek or self.isThisweek:
             return "%2d월 %2d일 %2d시 %2d분"% (self.Month ,self.From_Day, self.Oclock , self.Min) + " ~ " + "%2d월 %2d일 %2d시 %2d분"% (self.Month ,self.To_Day, self.Oclock , self.Min)
         else:
-            return "보안 관련 정보로 추정됨"
+            return "시간 정보 없음"
 
 def conver_to_int(char):
     numlist = ['zero', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구']
@@ -127,8 +131,8 @@ def extract_time(word):
 def getWhen(twit,checklist):
     # 3일 뒤 1주일 후 구현 안됨
     # 월을 넘어갈 때 기능 구현(3월34일 = 4월 3일) 구현 안됨
-    # 오전 오후 구현 안됨
-    # 아침, 점심, 저녁 구현 안됨
+    # 오전 오후 구현 됨
+    # 아침, 점심, 저녁 구현 됨
 
     #  요일의 경우 '요일'꼭 붙여야 함 / 내일.모레 구현완료 / 이번주, 다음주 시간범위 측정가능 /
     timeclass = When()
@@ -176,12 +180,13 @@ def getWhen(twit,checklist):
                 checklist[i] = 1
                 checklist[i + 1] = 1
 
-            elif word == '오전' or word =='아침':
+            elif word == '오전' or word =='아침'or word=='새벽':
                 #timeclass.update(timeclass.Day_original + 2, '일')
+                timeclass.update(-12, '시')
                 checklist[i] = 1
 
-            elif word == '오후' or word == '점심' or  word =='저녁':
-                #timeclass.update(timeclass.Day_original + 2, '일')
+            elif word == '오후' or  word =='저녁':
+
                 checklist[i] = 1
 
 
@@ -196,84 +201,65 @@ def getWhen(twit,checklist):
 
 
 def Action(twit, checklist): # 진행중
-    # 보안관련 액션 추가
-    # 등록시 일정이 등록됨
-    # 일정 추가 -> 추가
+
+    # 보안이든 일정이든 추가,삭제,수정,조회하는 건 똑같으니
+    # 첫 단계에서 < 정보조회/수정> 을 나누고 그 후 <보안/일정> 을 파악하는 게 어떤지
+
 
     action_list = []
     add = False
-    sentence_type = 0
-    grouping_type = None
+    security = '일정정보'
 
     for i in range(len(twit)):
         word, pos = twit[i]
 
-        # 보안관련 문장인 경우
-        if word in {'친구', '친한친구', '그룹'}:
-            checklist[i] = 'type1'
-            sentence_type = 1
-            grouping_type = word
-            break;
-
         # 정보확인에 관한 문장인 경우
-        elif word in {'?'}:
-            checklist[i] = 'type2'
-            sentence_type = 2
-            break;
+        if word in {'확인', '알다', '가능하다', '되다', '돼다', '야','언제','시간', '?'}:
+            checklist[i] = 'check'
+            if pos == 'Noun' and i + 1 < len(twit):
+                checklist[i + 1] = 2
+            add = True
+            action_list.append(('정보확인', word))
+            break
 
-        # 일정 관련 문장인 경우
+        # 정보수정에 문장인 경우
         else:
-            # checklist[i] = 'type3'
-            sentence_type = 3
-
-    for i in range(len(twit)):
-        word, pos = twit[i]
-
-        # 보안관련 문장인 경우
-        if sentence_type == 1:
-            if word in {'추가', '등록', '생성', '만들다'}:
-                action_list.append((grouping_type + '추가', word))
-                add = True
-            if word in {'삭제'}:
-                action_list.append((grouping_type + '추가', word))
-                add = True
-
-        # 정보확인에 관한 문장인 경우
-        elif sentence_type == 2:
-            if word in {'확인', '알다', '가능하다', '되다', '돼다', '있다', '야', '하다'}:
-                checklist[i] = 2
+            if word in {'추가', '등록'}: # 있다 제거 함
+                checklist[i] = 'edit'
                 if pos == 'Noun' and i + 1 < len(twit):
                     checklist[i + 1] = 2
                 add = True
-                action_list.append(('정보확인', word))
-
-        # 일정 관련 문장인 경우
-        else:
-            if word in {'추가', '등록', '있다'}:
-                checklist[i] = 2
-                if pos == 'Noun' and i + 1 < len(twit):
-                    checklist[i + 1] = 2
-                add = True
-                action_list.append(('일정등록', word))
+                action_list.append(('정보추가', word))
+                break
 
             elif word in {'변경', '수정', '바꾸다'}:
-                checklist[i] = 2
+                checklist[i] = 'edit'
                 if pos == 'Noun' and i + 1 < len(twit):
-                    checklist[i + 1] = 2
+                    checklist[i + 1] = 'edit'
                 add = True
-                action_list.append( ('일정변경', word))
+                action_list.append( ('정보수정', word))
+                break
 
             elif word in {'삭제', '지우다', '없애다', '없다', '취소'}:
-                checklist[i] = 2
+                checklist[i] = 'edit'
                 if pos == 'Noun' and i+1 < len(twit):
-                    checklist[i+1] = 2
+                    checklist[i+1] = 'edit'
                 add = True
-                action_list.append(('일정삭제', word))
+                action_list.append(('정보삭제', word))
+                break
+    # 보안에 관한 문장
+    for i in range(len(twit)):
+        word, pos = twit[i]
+        if word in {'친구', '친한친구', '그룹', '친한'}:
+            checklist[i] = 'security'
+            security = '보안정보'
+            break
 
-    # 디폴트로 일정을 등록
+    # 디폴트로  정보추가
     if add is False:
-        action_list.append('일정등록')
-    return action_list
+        action_list.append('정보추가')
+
+    return (security, action_list)
 
 
 def getWhere(twit, checklist):
@@ -286,12 +272,15 @@ def getWhere(twit, checklist):
                 result.append(twit[t-1][0])
                 checklist[t] = 4
                 checklist[t-1] = 4
-    print(checklist)
+    #print(checklist)
     return result
 
 
 def getFriends(ID): # depends on database....
-    return {'진호', '영희', '철수','건희'}
+    return {'진호', '영희', '철수','건희','승주'}
+
+def getGroup(ID):
+    return{'종설프', '인공지능세미나', '독서동아리'}
 
 
 def getWhat(twit, checklist):
@@ -322,15 +311,15 @@ def getWhom(twit,checklist):
 
 
 def understand(sentence):
-    #print("\n", sentence)
+    print(sentence)
     sentence = sentence.strip()
     twitter = Twitter().pos(sentence, norm=True, stem=True)
-    print(twitter)
+    #print(twitter)
     cheklist = [False for i in range(len(twitter))]
     when = getWhen(twitter,cheklist)
-    action = Action(twitter,cheklist)
     whom = getWhom(twitter,cheklist)
     where = getWhere(twitter,cheklist)
+    action = Action(twitter, cheklist)
     what = getWhat(twitter, cheklist)
     #isSchedule= 1 # 스케줄 일정인가 보안 정보인가
 
